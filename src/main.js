@@ -1,8 +1,10 @@
+var treeInstance = null;
+
 window.addEvent('domready',function() {
 	var context = $("tree_canvas");
 	context.width  = window.innerWidth - 8;
 	context.height = window.innerHeight - 8;
-	var instance = new Tree("tree_canvas");
+	treeInstance = new Tree("tree_canvas");
 })
 
 Leap.loop({background: true}, mainLoop).connect();
@@ -61,10 +63,13 @@ function mainLoop(frame) {
 	for (var hand of frame.hands) {
 		var leapPos = {x: hand.palmPosition[0], y: hand.palmPosition[1]};
 		var screenPos = {
-			x: scale(-250, 250, 0, canvasSize.width, leapPos.x),
-			y: scale(50, 350, 0, canvasSize.height, leapPos.y)
+			x: scale(-200, 200, 0, canvasSize.width, leapPos.x),
+			y: scale(50, 350, canvasSize.width, 0, leapPos.y)
 		};
-		console.log(screenPos);
+		// console.log(screenPos);
+
+		treeInstance.update(screenPos);
+
 		/*for (var finger of hand.fingers) {
 
 		}*/
