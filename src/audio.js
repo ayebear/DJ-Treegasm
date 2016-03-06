@@ -39,6 +39,7 @@ function OscAudio(audioContext) {
 	// this.drumSound = new Audio("data/drum.mp3");
 
 	this.playing = false;
+	this.useDrums = true;
 }
 
 OscAudio.prototype.stopAudio = function() {
@@ -53,6 +54,10 @@ OscAudio.prototype.playDrum = function() {
 	this.playing = true;
 	var that = this;
 	window.setTimeout(function(){that.playing = false;}, 350);
+}
+
+OscAudio.prototype.toggleDrums = function() {
+	this.useDrums = !this.useDrums;
 }
 
 OscAudio.prototype.updateAudio = function(freq, drum, distortion, volume) {
@@ -76,7 +81,7 @@ OscAudio.prototype.updateAudio = function(freq, drum, distortion, volume) {
 	//volume: pinch
 	this.gainNode.gain.value = volume;
 
-	if (this.oldDrum && drum - this.oldDrum > 50) {
+	if (this.useDrums && this.oldDrum && drum - this.oldDrum > 50) {
 		// var drumSound = new Audio("data/drum.mp3");
 		// this.drumSound.play();
 		this.playDrum();
