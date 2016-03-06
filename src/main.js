@@ -24,10 +24,10 @@ window.addEvent('domready',function() {
 window.onkeypress = function(event) {
 	if (event.keyCode == 111) {
 		// 'O' key pressed
-		audio = new OscAudio(audioContext);
+		// audio = new OscAudio(audioContext);
 	} else if (event.keyCode == 112) {
 		// 'P' key pressed
-		audio = new PitchShifter(audioContext);
+		// audio = new PitchShifter(audioContext);
 	}
 }
 
