@@ -1,13 +1,35 @@
 var treeInstance = null;
+// var audioInstances;
+var audio;
+var audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
 window.addEvent('domready',function() {
+	// Setup fractal tree instance
 	var context = $("tree_canvas");
 	context.width  = window.innerWidth - 8;
 	context.height = window.innerHeight - 8;
 	treeInstance = new Tree("tree_canvas", true, {h: 120, s: 0.7, l: 0.5});
+
+	// Setup audio instances
+	// audioInstances = {
+	// 	osc: new OscAudio(audioContext),
+	// 	pitch: new PitchShifter(audioContext)
+	// };
+	audio = new OscAudio(audioContext);
+
+	// Start leap.js event loop
+	Leap.loop({background: true}, mainLoop).connect();
 })
 
-Leap.loop({background: true}, mainLoop).connect();
+window.onkeypress = function(event) {
+	if (event.keyCode == 111) {
+		// 'O' key pressed
+		audio = new OscAudio(audioContext);
+	} else if (event.keyCode == 112) {
+		// 'P' key pressed
+		audio = new PitchShifter(audioContext);
+	}
+}
 
 function getCanvasSize() {
 	var context = $("tree_canvas");
@@ -96,7 +118,7 @@ function mainLoop(frame) {
 			x: scale(25, 175, 0, canvasSize.width, 120 - avgFingerDistance),
 			y: scale(50, 300, canvasSize.height, 0, leapPos.y)
 		};
-		console.log(screenPos);
+		// console.log(screenPos);
 
 		// Map leap wrist rotation (roll) to HSL color
 		var wristRotation = Math.abs(hand.roll());
@@ -123,13 +145,14 @@ function mainLoop(frame) {
 		treeInstance.update(screenPos, hsl);
 
 		//user sets speed to .1 to 5
-		// var speed = scale(0, Math.PI, 10, 2000, wristRotation);
-		var speed = scale(0, Math.PI, 0.5, 2, wristRotation);
+		var speed = scale(0, Math.PI, 10, 2000, wristRotation);
+		// var speed = scale(0, Math.PI, 0.5, 2, wristRotation);
 		var drum = screenPos.y;
 		var distortion = saturation;
-		var volume = scale(25, 125, 0, 1, avgFingerDistance);
+		// var volume = scale(25, 125, 0, 1, avgFingerDistance);
+		var volume = scale(25, 125, 0, 0.04, avgFingerDistance);
 		//console.log("volume: " + volume);
 		// Update audio output
-		updateAudio(speed, drum, distortion, volume);
+		audio.updateAudio(speed, drum, distortion, volume);
 	}
 }

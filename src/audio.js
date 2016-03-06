@@ -1,82 +1,65 @@
-var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function OscAudio(audioContext) {
 
-// create Oscillator and gain node
-var oscillator = audioCtx.createOscillator();
-var gainNode = audioCtx.createGain();
+	// create initial theremin frequency and volumn values
 
-// connect oscillator to gain node to speakers
+	var maxFreq = 2000; //originally 6000
+	var maxVol = 0.02;
 
-oscillator.connect(gainNode);
-gainNode.connect(audioCtx.destination);
+	var initialFreq = 0; //originally 3000
+	var initialVol = 0.001;
 
-// create initial theremin frequency and volumn values
+	this.audioContext = audioContext;
 
-var WIDTH = window.innerWidth;
-var HEIGHT = window.innerHeight;
+	// create Oscillator and gain node
+	this.oscillator = this.audioContext.createOscillator();
+	this.gainNode = this.audioContext.createGain();
 
-var maxFreq = 2000; //originally 6000
-var maxVol = 0.02;
+	// connect oscillator to gain node to speakers
 
-var initialFreq = 0; //originally 3000
-var initialVol = 0.001;
+	this.oscillator.connect(this.gainNode);
+	this.gainNode.connect(this.audioContext.destination);
 
-// set options for the oscillator
+	// set options for the oscillator
 
-oscillator.type = 'square';// 'square';
-oscillator.frequency.value = initialFreq; // value in hertz
-oscillator.detune.value = 100; // value in cents
-oscillator.start(0);
+	this.oscillator.type = 'square';// 'square';
+	this.oscillator.frequency.value = initialFreq; // value in hertz
+	this.oscillator.detune.value = 100; // value in cents
+	this.oscillator.start(0);
 
-oscillator.onended = function() {
-  console.log('Your tone has now stopped playing!');
+	this.oscillator.onended = function() {
+		console.log('Your tone has now stopped playing!');
+	}
+
+	this.gainNode.gain.value = initialVol;
+
+	this.timeoutId = null;
 }
 
-gainNode.gain.value = initialVol;
-
-// Mouse pointer coordinates
-
-/*
-var CurX;
-var CurY;
-*/
-// Get new mouse pointer coordinates when mouse is moved
-// then set new gain and pitch values
-
-//document.onmousemove = updatePage;
-
-var timeoutId;
-
-function stopAudio() {
-  gainNode.gain.value = 0;
+OscAudio.prototype.stopAudio = function() {
+	this.gainNode.gain.value = 0;
 }
 
+OscAudio.prototype.updateAudio = function(freq, drum, distortion, volume) {
+	console.log("In osc mode");
 
-var oldDrumHeight;
+	if (this.timeoutId != null)
+		window.clearTimeout(this.timeoutId);
+	//console.log("xPos, yPos: " + xPos + " " + yPos);
+	 // KeyFlag = false;
+	//originally used mouse, but now input comes from leap motion
+	 /*
+				roll(): frequency
+				y: drum
+				z: distortion
+				pinch: volume
+			*/
 
-function updateAudio(freq, drum, distortion, volume) {
-  window.clearTimeout(timeoutId);
-  //console.log("xPos, yPos: " + xPos + " " + yPos);
-   KeyFlag = false;
-  //originally used mouse, but now input comes from leap motion
-   /*
-        roll(): frequency
-        y: drum
-        z: distortion
-        pinch: volume
-      */
+	//frequency, x: done
+	this.oscillator.frequency.value = freq;
 
-  //frequency, x: done
-  oscillator.frequency.value = freq;
+	//volume: pinch
+	this.gainNode.gain.value = volume;
 
-  //volume: pinch
-  gainNode.gain.value = volume;
-
-  if(Math.abs(drum - oldDrumHeight) > 30){
-    //play drum sound
-    var audio = new Audio('http://www.randomthink.net/labs/html5drums/drumkit/Tom%20Low.mp3');
-    audio.play();
-  }
-
-   //canvasDraw();
-  timeoutId = window.setTimeout(stopAudio, 500);
+	var that = this;
+	this.timeoutId = window.setTimeout(function(){that.stopAudio();}, 500);
 }
