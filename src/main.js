@@ -24,13 +24,10 @@ window.addEvent('domready',function() {
 window.onkeypress = function(event) {
 	if (event.keyCode == 49) {
 		// '1' key pressed
-		// audio = new OscAudio(audioContext);
+		audio.toggleDrums();
 	} else if (event.keyCode == 50) {
 		// '2' key pressed
-		// audio = new PitchShifter(audioContext);
-	} else if (event.keyCode == 51) {
-		// '3' key pressed
-		audio.toggleDrums();
+		audio.toggleOsc();
 	}
 }
 
