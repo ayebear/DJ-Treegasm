@@ -61,17 +61,33 @@ LeapFrame = {
 function mainLoop(frame) {
 	var canvasSize = getCanvasSize();
 	for (var hand of frame.hands) {
-		var leapPos = {x: hand.palmPosition[0], y: hand.palmPosition[1]};
-		var screenPos = {
-			x: scale(-200, 200, 0, canvasSize.width, leapPos.x),
-			y: scale(50, 350, canvasSize.width, 0, leapPos.y)
+		// Map leap position to screen position
+		var leapPos = {
+			x: hand.palmPosition[0],
+			y: hand.palmPosition[1],
+			z: hand.palmPosition[2]
 		};
-		// console.log(screenPos);
+		var screenPos = {
+			x: scale(-175, 175, 0, canvasSize.width, leapPos.x),
+			y: scale(50, 250, canvasSize.height * 1.4, 0, leapPos.y)
+		};
 
-		treeInstance.update(screenPos);
+		// Map leap wrist rotation (roll) to HSL color
+		var wristRotation = Math.abs(hand.roll());
+		var hue = scale(0, Math.PI, 0, 1, wristRotation);
+		var saturation = scale(-200, 200, 0, 1, leapPos.z);
+		var hsl = {
+			h: hue,
+			s: saturation,
+			l: 1
+		};
 
+		// Finger controls shapes/audio?
 		/*for (var finger of hand.fingers) {
 
 		}*/
+
+		// Update fractal tree with new inputs
+		treeInstance.update(screenPos, hsl);
 	}
 }
