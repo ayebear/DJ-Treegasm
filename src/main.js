@@ -122,12 +122,14 @@ function mainLoop(frame) {
 		// Update fractal tree with new inputs
 		treeInstance.update(screenPos, hsl);
 
-		var frequency = scale(0, Math.PI, 10, 1500, wristRotation);
+		//user sets speed to .1 to 5
+		// var speed = scale(0, Math.PI, 10, 2000, wristRotation);
+		var speed = scale(0, Math.PI, 0.5, 2, wristRotation);
 		var drum = screenPos.y;
 		var distortion = saturation;
-		var volume = scale(25, 125, 0, 0.04, avgFingerDistance);
+		var volume = scale(25, 125, 0, 1, avgFingerDistance);
 		//console.log("volume: " + volume);
 		// Update audio output
-		updateAudio(frequency, drum, distortion, volume);
+		updateAudio(speed, drum, distortion, volume);
 	}
 }
