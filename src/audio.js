@@ -34,11 +34,11 @@ function OscAudio(audioContext) {
 
 	this.timeoutId = null;
 
-	this.oldDrum = null;
+	this.oldDrum = {left: null, right: null};
 
 	// this.drumSound = new Audio("data/drum.mp3");
 
-	this.playing = false;
+	this.playing = {left: false, right: false};
 	this.useDrums = true;
 }
 
@@ -46,22 +46,22 @@ OscAudio.prototype.stopAudio = function() {
 	this.gainNode.gain.value = 0;
 }
 
-OscAudio.prototype.playDrum = function() {
-	if (!this.playing) {
-		var drumSound = new Audio("data/drum.mp3");
+OscAudio.prototype.playDrum = function(hand) {
+	if (!this.playing[hand]) {
+		var drumSound = new Audio("data/drum_" + hand + ".mp3");
 		drumSound.play();
 	}
-	this.playing = true;
+	this.playing[hand] = true;
 	var that = this;
-	window.setTimeout(function(){that.playing = false;}, 350);
+	window.setTimeout(function(){that.playing[hand] = false;}, 350);
 }
 
 OscAudio.prototype.toggleDrums = function() {
 	this.useDrums = !this.useDrums;
 }
 
-OscAudio.prototype.updateAudio = function(freq, drum, distortion, volume) {
-	console.log("In osc mode");
+OscAudio.prototype.updateAudio = function(freq, drum, distortion, volume, hand) {
+	console.log(hand);
 
 	if (this.timeoutId != null)
 		window.clearTimeout(this.timeoutId);
@@ -81,12 +81,12 @@ OscAudio.prototype.updateAudio = function(freq, drum, distortion, volume) {
 	//volume: pinch
 	this.gainNode.gain.value = volume;
 
-	if (this.useDrums && this.oldDrum && drum - this.oldDrum > 50) {
+	if (this.useDrums && this.oldDrum[hand] && drum - this.oldDrum[hand] > 50) {
 		// var drumSound = new Audio("data/drum.mp3");
 		// this.drumSound.play();
-		this.playDrum();
+		this.playDrum(hand);
 	}
-	this.oldDrum = drum;
+	this.oldDrum[hand] = drum;
 
 	var that = this;
 	this.timeoutId = window.setTimeout(function(){that.stopAudio();}, 500);

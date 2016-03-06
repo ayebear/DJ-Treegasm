@@ -156,6 +156,6 @@ function mainLoop(frame) {
 		var volume = scale(25, 125, 0, 0.04, avgFingerDistance);
 		//console.log("volume: " + volume);
 		// Update audio output
-		audio.updateAudio(speed, drum, distortion, volume);
+		audio.updateAudio(speed, drum, distortion, volume, hand.type);
 	}
 }
