@@ -68,18 +68,35 @@ LeapFrame = {
 }
 */
 
+function distance(pos1, pos2) {
+	return Math.sqrt(Math.pow((pos2[2] - pos1[2]), 2) + Math.pow((pos2[1] - pos1[1]), 2) + Math.pow((pos2[0] - pos1[0]), 2));
+}
+
+function averageFingerDistance(fingers) {
+	var sumDistances = 0;
+	for (i = 1; i < fingers.length; ++i) {
+		sumDistances = sumDistances + distance(fingers[i].tipPosition, fingers[0].tipPosition);
+	}
+	return sumDistances / 4;
+}
+
 function mainLoop(frame) {
 	var canvasSize = getCanvasSize();
 	for (var hand of frame.hands) {
 		// Map leap position to screen position
 		var leapPos = {
+			// x: hand.palmPosition[0],
 			x: hand.palmPosition[0],
 			y: hand.palmPosition[1],
 			z: hand.palmPosition[2]
 		};
+
+		var avgFingerDistance = averageFingerDistance(hand.fingers);
+		// console.log(avgFingerDistance);
+		console.log(leapPos.x);
 		var screenPos = {
-			x: scale(-175, 175, 0, canvasSize.width, leapPos.x),
-			y: scale(50, 250, canvasSize.height * 1.4, 0, leapPos.y)
+			x: scale(25, 175, 0, canvasSize.width, 120 - avgFingerDistance),
+			y: scale(0, 250, canvasSize.height * 1.4, 0, leapPos.y)
 		};
 
 		// Map leap wrist rotation (roll) to HSL color
