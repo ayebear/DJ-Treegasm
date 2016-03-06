@@ -4,7 +4,7 @@ window.addEvent('domready',function() {
 	var context = $("tree_canvas");
 	context.width  = window.innerWidth - 8;
 	context.height = window.innerHeight - 8;
-	treeInstance = new Tree("tree_canvas");
+	treeInstance = new Tree("tree_canvas", true, {h: 120, s: 0.7, l: 0.5});
 })
 
 Leap.loop({background: true}, mainLoop).connect();
@@ -79,7 +79,7 @@ function mainLoop(frame) {
 		var hsl = {
 			h: hue,
 			s: saturation,
-			l: 1
+			l: 0.5
 		};
 
 		// Finger controls shapes/audio?
