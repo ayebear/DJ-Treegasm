@@ -83,7 +83,7 @@ function mainLoop(frame) {
 
 		var avgFingerDistance = averageFingerDistance(hand.fingers);
 		// console.log(avgFingerDistance);
-		console.log(leapPos.x);
+		// console.log(leapPos.x);
 		var screenPos = {
 			x: scale(25, 175, 0, canvasSize.width, 120 - avgFingerDistance),
 			y: scale(0, 250, canvasSize.height * 1.4, 0, leapPos.y)
@@ -103,11 +103,22 @@ function mainLoop(frame) {
 		/*for (var finger of hand.fingers) {
 
 		}*/
+		  /*
+		    roll(): frequency
+		    y: drum
+		    z: distortion
+		    pinch: volume
+		  */
 
 		// Update fractal tree with new inputs
 		treeInstance.update(screenPos, hsl);
 
+		var frequency = scale(0, Math.PI, 10, 1500, wristRotation);
+		var drum = screenPos.y; 
+		var distortion = saturation;
+		var volume = scale(25, 125, 0, 0.04, avgFingerDistance);
+		//console.log("volume: " + volume);
 		// Update audio output
-		updateAudio(screenPos.x, screenPos.y);
+		updateAudio(frequency, drum, distortion, volume);
 	}
 }
