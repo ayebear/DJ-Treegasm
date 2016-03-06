@@ -17,9 +17,19 @@ function getCanvasSize() {
 	};
 }
 
+function clamp(min, max, value) {
+	if (value < min)
+		value = min;
+	if (value > max)
+		value = max;
+	return value;
+}
+
 // E.g.: scale(50, 400, 0, 800, 217)
 //       => ~400
+// Note: Input values out of range will be clamped to their boundaries
 function scale(inputMin, inputMax, outputMin, outputMax, value) {
+	value = clamp(inputMin, inputMax, value);
 	var inputRange = inputMax - inputMin;
 	var outputRange = outputMax - outputMin;
 	return (((value - inputMin) / inputRange) * outputRange) + outputMin;
@@ -67,7 +77,7 @@ function averageFingerDistance(fingers) {
 	for (i = 1; i < fingers.length; ++i) {
 		sumDistances = sumDistances + distance(fingers[i].tipPosition, fingers[0].tipPosition);
 	}
-	return sumDistances / 4;
+	return sumDistances / (fingers.length - 1);
 }
 
 function mainLoop(frame) {
@@ -82,11 +92,10 @@ function mainLoop(frame) {
 		};
 
 		var avgFingerDistance = averageFingerDistance(hand.fingers);
-		// console.log(avgFingerDistance);
-		// console.log(leapPos.x);
+		var max = canvasSize.height * 1.4;
 		var screenPos = {
 			x: scale(25, 175, 0, canvasSize.width, 120 - avgFingerDistance),
-			y: scale(0, 250, canvasSize.height * 1.4, 0, leapPos.y)
+			y: (max - scale(50, 250, -100, max, leapPos.y))
 		};
 
 		// Map leap wrist rotation (roll) to HSL color
@@ -114,7 +123,7 @@ function mainLoop(frame) {
 		treeInstance.update(screenPos, hsl);
 
 		var frequency = scale(0, Math.PI, 10, 1500, wristRotation);
-		var drum = screenPos.y; 
+		var drum = screenPos.y;
 		var distortion = saturation;
 		var volume = scale(25, 125, 0, 0.04, avgFingerDistance);
 		//console.log("volume: " + volume);
