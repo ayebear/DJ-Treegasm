@@ -77,7 +77,7 @@ function averageFingerDistance(fingers) {
 	for (i = 1; i < fingers.length; ++i) {
 		sumDistances = sumDistances + distance(fingers[i].tipPosition, fingers[0].tipPosition);
 	}
-	return sumDistances / 4;
+	return sumDistances / (fingers.length - 1);
 }
 
 function mainLoop(frame) {
@@ -92,11 +92,12 @@ function mainLoop(frame) {
 		};
 
 		var avgFingerDistance = averageFingerDistance(hand.fingers);
-		// console.log(avgFingerDistance);
-		console.log(leapPos.x);
+		console.log(avgFingerDistance);
+		// console.log(leapPos.y);
+		var max = canvasSize.height * 1.4;
 		var screenPos = {
 			x: scale(25, 175, 0, canvasSize.width, 120 - avgFingerDistance),
-			y: scale(0, 250, canvasSize.height * 1.4, 0, leapPos.y)
+			y: (max - scale(50, 250, -100, max, leapPos.y))
 		};
 
 		// Map leap wrist rotation (roll) to HSL color
