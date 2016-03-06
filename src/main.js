@@ -69,7 +69,7 @@ function mainLoop(frame) {
 		// console.log(screenPos);
 
 		treeInstance.update(screenPos);
-
+    updateAudio(screenPos.x, screenPos.y);
 		/*for (var finger of hand.fingers) {
 
 		}*/
