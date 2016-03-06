@@ -17,9 +17,19 @@ function getCanvasSize() {
 	};
 }
 
+function clamp(min, max, value) {
+	if (value < min)
+		value = min;
+	if (value > max)
+		value = max;
+	return value;
+}
+
 // E.g.: scale(50, 400, 0, 800, 217)
 //       => ~400
+// Note: Input values out of range will be clamped to their boundaries
 function scale(inputMin, inputMax, outputMin, outputMax, value) {
+	value = clamp(inputMin, inputMax, value);
 	var inputRange = inputMax - inputMin;
 	var outputRange = outputMax - outputMin;
 	return (((value - inputMin) / inputRange) * outputRange) + outputMin;
