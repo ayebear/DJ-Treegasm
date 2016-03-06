@@ -50,14 +50,32 @@ function stopAudio() {
   gainNode.gain.value = 0;
 }
 
-function updateAudio(xPos, yPos) {
+
+var oldDrumHeight;
+
+function updateAudio(freq, drum, distortion, volume) {
   window.clearTimeout(timeoutId);
   //console.log("xPos, yPos: " + xPos + " " + yPos);
    KeyFlag = false;
   //originally used mouse, but now input comes from leap motion
-    
-    oscillator.frequency.value = (xPos/WIDTH) * maxFreq;
-    gainNode.gain.value = (yPos/HEIGHT) * maxVol;
+   /*
+        roll(): frequency
+        y: drum
+        z: distortion
+        pinch: volume
+      */
+
+  //frequency, x: done
+  oscillator.frequency.value = freq;
+
+  //volume: pinch
+  gainNode.gain.value = volume;
+
+  if(Math.abs(drum - oldDrumHeight) > 30){
+    //play drum sound
+    var audio = new Audio('http://www.randomthink.net/labs/html5drums/drumkit/Tom%20Low.mp3');
+    audio.play();
+  }
 
    //canvasDraw();
   timeoutId = window.setTimeout(stopAudio, 500);
