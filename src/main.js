@@ -74,7 +74,7 @@ function mainLoop(frame) {
 
 		// Map leap wrist rotation (roll) to HSL color
 		var wristRotation = Math.abs(hand.roll());
-		var hue = scale(0, Math.PI, 0, 1, wristRotation);
+		var hue = scale(0, Math.PI, 0, 360, wristRotation);
 		var saturation = scale(-200, 200, 0, 1, leapPos.z);
 		var hsl = {
 			h: hue,
