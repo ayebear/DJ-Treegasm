@@ -33,10 +33,26 @@ function OscAudio(audioContext) {
 	this.gainNode.gain.value = initialVol;
 
 	this.timeoutId = null;
+
+	this.oldDrum = null;
+
+	// this.drumSound = new Audio("data/drum.mp3");
+
+	this.playing = false;
 }
 
 OscAudio.prototype.stopAudio = function() {
 	this.gainNode.gain.value = 0;
+}
+
+OscAudio.prototype.playDrum = function() {
+	if (!this.playing) {
+		var drumSound = new Audio("data/drum.mp3");
+		drumSound.play();
+	}
+	this.playing = true;
+	var that = this;
+	window.setTimeout(function(){that.playing = false;}, 350);
 }
 
 OscAudio.prototype.updateAudio = function(freq, drum, distortion, volume) {
@@ -59,6 +75,13 @@ OscAudio.prototype.updateAudio = function(freq, drum, distortion, volume) {
 
 	//volume: pinch
 	this.gainNode.gain.value = volume;
+
+	if (this.oldDrum && drum - this.oldDrum > 50) {
+		// var drumSound = new Audio("data/drum.mp3");
+		// this.drumSound.play();
+		this.playDrum();
+	}
+	this.oldDrum = drum;
 
 	var that = this;
 	this.timeoutId = window.setTimeout(function(){that.stopAudio();}, 500);
