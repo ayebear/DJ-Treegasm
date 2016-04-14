@@ -1,7 +1,8 @@
 var treeInstance = null;
-// var audioInstances;
 var audio;
 var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+var gn = new GyroNorm();
 
 window.addEvent('domready',function() {
 	// Setup fractal tree instance
@@ -19,6 +20,31 @@ window.addEvent('domready',function() {
 
 	// Start leap.js event loop
 	Leap.loop({background: true}, mainLoop).connect();
+
+	// Start device orientation event loop:
+	gn.init().then(function(){
+		gn.start(function(data){
+			// Ignore non-mobile devices (need a better way to detect this)
+			if (data.do.alpha == 0) {
+				return;
+			}
+
+			// Update tree
+			// treeInstance.update(screenPos, hsl);
+
+			// Update audio
+			var speed = scale(-10, 10, 10, 2000, data.do.alpha);
+			var drum = 100;
+			var distortion = 1;
+			var volume = 0.04;
+
+			audio.updateAudio(speed, drum, distortion, volume, "right");
+
+		});
+	}).catch(function(e){
+		// Catch if the DeviceOrientation or DeviceMotion is not supported by the browser or device
+		alert("ERROR: Device Orientation features not supported");
+	});
 })
 
 window.onkeypress = function(event) {
@@ -60,32 +86,32 @@ function scale(inputMin, inputMax, outputMin, outputMax, value) {
 /*
 LeapFrame = {
   hands: [
-    {
-      palmPosition: [x,y,z]
-      palmNormal: [x,y,z]
-      direction: [x,y,z]
-      roll()
-      pitch()
-      yaw()
-      pinchStrength: 0-1
-      grabStrength:  0-1
-      fingers: [
-        {
-          tipPosition: [x,y,z]
-          direction: [x,y,z]
-          bones: [
-            {
-              prevJoint: [x,y,z]
-              nextJoint: [x,y,z]
-              length: mm
-              width:  mm
-              center()
-              matrix()
-            }
-          ]
-        }
-      ]
-    }
+	{
+	  palmPosition: [x,y,z]
+	  palmNormal: [x,y,z]
+	  direction: [x,y,z]
+	  roll()
+	  pitch()
+	  yaw()
+	  pinchStrength: 0-1
+	  grabStrength:  0-1
+	  fingers: [
+		{
+		  tipPosition: [x,y,z]
+		  direction: [x,y,z]
+		  bones: [
+			{
+			  prevJoint: [x,y,z]
+			  nextJoint: [x,y,z]
+			  length: mm
+			  width:  mm
+			  center()
+			  matrix()
+			}
+		  ]
+		}
+	  ]
+	}
   ]
 }
 */
@@ -135,10 +161,10 @@ function mainLoop(frame) {
 
 		}*/
 		  /*
-		    roll(): frequency
-		    y: drum
-		    z: distortion
-		    pinch: volume
+			roll(): frequency
+			y: drum
+			z: distortion
+			pinch: volume
 		  */
 
 		// Update fractal tree with new inputs
