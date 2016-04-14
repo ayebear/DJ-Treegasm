@@ -11,11 +11,6 @@ window.addEvent('domready',function() {
 	context.height = window.innerHeight - 8;
 	treeInstance = new Tree("tree_canvas", true, {h: 120, s: 0.7, l: 0.5});
 
-	// Setup audio instances
-	// audioInstances = {
-	// 	osc: new OscAudio(audioContext),
-	// 	pitch: new PitchShifter(audioContext)
-	// };
 	audio = new OscAudio(audioContext);
 
 	// Start leap.js event loop
@@ -29,11 +24,15 @@ window.addEvent('domready',function() {
 				return;
 			}
 
+			var alpha = scale(0, 360, 0, 1, data.do.alpha);
+			var beta = scale(-180, 180, 0, 1, data.do.beta);
+			var gamma = scale(0, 180, 0, 1, data.do.gamma + 90);
+
 			// Update tree
 			// treeInstance.update(screenPos, hsl);
 
 			// Update audio
-			var speed = scale(-10, 10, 10, 2000, data.do.alpha);
+			var speed = scale(0, 1, 10, 2000, gamma);
 			var drum = 100;
 			var distortion = 1;
 			var volume = 0.04;
@@ -133,7 +132,6 @@ function mainLoop(frame) {
 	for (var hand of frame.hands) {
 		// Map leap position to screen position
 		var leapPos = {
-			// x: hand.palmPosition[0],
 			x: hand.palmPosition[0],
 			y: hand.palmPosition[1],
 			z: hand.palmPosition[2]
@@ -144,7 +142,6 @@ function mainLoop(frame) {
 			x: scale(25, 175, 0, canvasSize.width, 120 - avgFingerDistance),
 			y: scale(50, 300, canvasSize.height, 0, leapPos.y)
 		};
-		// console.log(screenPos);
 
 		// Map leap wrist rotation (roll) to HSL color
 		var wristRotation = Math.abs(hand.roll());
@@ -156,28 +153,15 @@ function mainLoop(frame) {
 			l: 0.5
 		};
 
-		// Finger controls shapes/audio?
-		/*for (var finger of hand.fingers) {
-
-		}*/
-		  /*
-			roll(): frequency
-			y: drum
-			z: distortion
-			pinch: volume
-		  */
-
 		// Update fractal tree with new inputs
 		treeInstance.update(screenPos, hsl);
 
-		//user sets speed to .1 to 5
+		// Compute audio values
 		var speed = scale(0, Math.PI, 10, 2000, wristRotation);
-		// var speed = scale(0, Math.PI, 0.5, 2, wristRotation);
 		var drum = screenPos.y;
 		var distortion = saturation;
-		// var volume = scale(25, 125, 0, 1, avgFingerDistance);
 		var volume = scale(25, 125, 0, 0.04, avgFingerDistance);
-		//console.log("volume: " + volume);
+
 		// Update audio output
 		audio.updateAudio(speed, drum, distortion, volume, hand.type);
 	}
